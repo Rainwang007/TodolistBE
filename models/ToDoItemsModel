@@ -1,0 +1,28 @@
+const mongoose = require('mongoose');
+
+const toDoItemSchema = new mongoose.Schema(
+    {
+        toDoItem: { type: String, required: true },
+        details: { type: String },
+        assignedTo: { type: Array, required: true },
+        deadline: { type: Date, required: true },
+        status: { type: String, required: true },
+        priority: { type: String },
+        repeating: { type: String }
+    },
+    {
+        timestamps: true,
+        // toJSON: { virtuals: true }, // So `res.json()` and other `JSON.stringify()` functions include virtuals
+        // toObject: { virtuals: true }
+    }
+);
+
+// menuItemSchema.virtual('reviews', {
+//     ref: reviewModel,
+//     localField: '_id',
+//     foreignField: 'menu_item'
+// });
+
+const toDoItem = mongoose.model('toDoItem', toDoItemSchema);
+
+module.exports = toDoItem;

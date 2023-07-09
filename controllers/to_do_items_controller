@@ -1,0 +1,151 @@
+const mongoose = require('mongoose');
+const toDoItemModel = require('../models/ToDoItemsModel');
+
+
+const controllers = {
+    getToDoItems: async (req, res) => {
+        const items = await toDoItemModel.find();
+        res.json(items);
+    },
+    getItemDetail: async (req, res) => {
+        const itemId = req.params.itemId;
+        console.log(itemId);
+        let toDoItem = null;
+
+        try {
+            // use model to find by id
+            toDoItem = await toDoItemModel.findById(itemId);
+        } catch (err) {
+            // if any error -> return response 500
+            res.statusCode = 500;
+            return res.json();
+        }
+
+        // if not exists -> return response 404
+        if (!toDoItem) {
+            console.log('does not exists');
+            res.statusCode = 404;
+            return res.json();
+        }
+
+        return res.json(toDoItem);
+    },
+    createToDoItem: async (req, res) => {
+        // get data from request
+        const data = req.body;
+        console.log(data);
+        //insert to DB using model
+        const result = await toDoItemModel.create({
+            toDoItem: data.toDoItem,
+            details: data.details,
+            assignedTo: data.assignedTo,
+            deadline: data.deadline,
+            priority: data.priority,
+            repeating: data.repeating,
+            status: "Open"
+        },);
+
+        res.statusCode = 201;
+        res.json({
+            msg: "Created successfully"
+        });
+
+    },
+    updateToDoItem: async (req, res) => {
+        const data = req.body;
+        //can only update details, deadline and status
+        console.log(data.status);
+
+        // TODO: validation
+
+        // try get the item from DB, if not exists, return 404 not found response
+        let item = null; // -> will evaluate to a falsy value
+
+        try {
+            item = await toDoItemModel.findById(req.params.itemId);
+        } catch (err) {
+            console.log(err);
+            res.statusCode = 500;
+            return res.json();
+        }
+
+        if (!item) {
+            res.statusCode = 404;
+            return res.json();
+        }
+
+        console.log(item);
+
+
+        // use menu item model to update into database
+        try {
+            await toDoItemModel.updateOne(
+                {
+                    _id: req.params.itemId
+                },
+                {
+                    toDoItem: item.toDoItem,
+                    details: data.details,
+                    assignedTo: item.assignedTo,
+                    deadline: data.deadline,
+                    priority: item.priority,
+                    repeating: item.repeating,
+                    status: data.status
+                }
+            );
+        } catch (err) {
+            console.log(err);
+            res.statusCode = 500;
+            return res.json();
+        }
+
+        console.log('updated');
+
+        res.json();
+    },
+
+    deleteToDoItems: async (req, res) => {
+        const data = req.body;
+
+
+        // try get the item from DB, if not exists, return 404 not found response
+        let item = null; // -> will evaluate to a falsy value
+
+        try {
+            item = await toDoItemModel.findById(req.params.itemId);
+        } catch (err) {
+            console.log(err);
+            res.statusCode = 500;
+            return res.json();
+        }
+
+        if (!item) {
+            res.statusCode = 404;
+            return res.json();
+        }
+
+        console.log(item);
+
+
+        // use menu item model to update into database
+        try {
+            await toDoItemModel.deleteOne(
+                {
+                    _id: req.params.itemID
+                }
+            );
+        } catch (err) {
+            console.log(err);
+            res.statusCode = 500;
+            return res.json();
+        }
+
+        console.log('deleted');
+
+        res.json();
+
+    },
+
+};
+
+module.exports = controllers;
