@@ -3,10 +3,26 @@ const toDoItemModel = require('../models/ToDoItemsModel');
 
 
 const controllers = {
-    getToDoItems: async (req, res) => {
-        const items = await toDoItemModel.find();
+
+    //Get open tasks
+    getOpenTasks: async (req, res) => {
+
+        const items = await toDoItemModel.find(
+            { assignedTo: [] });
         res.json(items);
     },
+
+    //User to check tasks specific only to them
+    getToDoItems: async (req, res) => {
+        console.log(res.locals.username);
+        const username = res.locals.username;
+
+        const items = await toDoItemModel.find(
+            { assignedTo: { $in: [username] } });
+        res.json(items);
+    },
+
+    //User to get tasks details, no need for authorisation here i think as anyone can see the open tasks
     getItemDetail: async (req, res) => {
         const itemId = req.params.itemId;
         console.log(itemId);
@@ -30,6 +46,9 @@ const controllers = {
 
         return res.json(toDoItem);
     },
+
+    //create to do item, user only needs to provide todoitem, who they want to assign to or leave it as open tasks, priority and if it is a repeating task.
+    //status will be default open but if assigned alrdy can set status as assigned instead.
     createToDoItem: async (req, res) => {
         // get data from request
         const data = req.body;
@@ -51,6 +70,9 @@ const controllers = {
         });
 
     },
+
+    //Users are able to change the details, assignedto if they feel it is not assigned to them correctly add collaborators, deadline if require extension,
+    //and status.
     updateToDoItem: async (req, res) => {
         const data = req.body;
         //can only update details, deadline and status
@@ -104,6 +126,7 @@ const controllers = {
         res.json();
     },
 
+    //user can delete tasks, but abit flawed as anyone can delete the task i guess?
     deleteToDoItems: async (req, res) => {
         const data = req.body;
 
@@ -140,7 +163,7 @@ const controllers = {
             return res.json();
         }
 
-        console.log('deleted');
+        console.log('Task deleted');
 
         res.json();
 

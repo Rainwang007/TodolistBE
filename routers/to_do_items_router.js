@@ -1,11 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const toDoItemController = require('../controllers/to_do_items_controller');
+const authMiddleware = require('../middlewares/auth_middleware');
 
-router.get('/', toDoItemController.getToDoItems);
-router.get('/:itemId', toDoItemController.getItemDetail);
-router.post('/', toDoItemController.createToDoItem);
-router.patch('/:itemId', toDoItemController.updateToDoItem);
-router.delete('/:itemId', toDoItemController.deleteToDoItems);
+router.get("/", toDoItemController.getOpenTasks);  //http://localhost:3000/api/toDoItems/
+router.get('/myToDoItems', authMiddleware, toDoItemController.getToDoItems); //http://localhost:3000/api/toDoItems/myToDoItems
+router.get('/:itemId', authMiddleware, toDoItemController.getItemDetail); //http://localhost:3000/api/toDoItems/ +item ID
+router.post('/', authMiddleware, toDoItemController.createToDoItem); //http://localhost:3000/api/toDoItems/
+router.patch('/:itemId', authMiddleware, toDoItemController.updateToDoItem); //http://localhost:3000/api/toDoItems/ + item ID
+router.delete('/:itemId', authMiddleware, toDoItemController.deleteToDoItems); //http://localhost:3000/api/toDoItems/ + itemID
 
 module.exports = router;
