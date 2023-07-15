@@ -9,5 +9,8 @@ router.get('/:itemId', authMiddleware, toDoItemController.getItemDetail); //http
 router.post('/', authMiddleware, toDoItemController.createToDoItem); //http://localhost:3000/api/toDoItems/
 router.patch('/:itemId', authMiddleware, toDoItemController.updateToDoItem); //http://localhost:3000/api/toDoItems/ + item ID
 router.delete('/:itemId', authMiddleware, toDoItemController.deleteToDoItems); //http://localhost:3000/api/toDoItems/ + itemID
+router.get('/createdBy/:userId', authMiddleware, toDoItemController.getCreatedByUser); //http://localhost:3000/api/toDoItems/createdBy/:userId
+router.get('/assignedTo/:userId', authMiddleware, toDoItemController.getAssignedToUser); //http://localhost:3000/api/toDoItems/assignedTo/:userId
+
 
 module.exports = router;

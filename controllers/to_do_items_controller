@@ -13,15 +13,15 @@ const controllers = {
     },
 
     //User to check tasks specific only to them
-    getToDoItems: async (req, res) => {
-        console.log(res.locals.username);
-        const username = res.locals.username;
-    
-        const user = await userModel.findOne({ username: username });
-        
-        const items = await toDoItemModel.find({ assignedTo: user._id }).populate('assignedTo');
-        res.json(items);
-    },
+        getToDoItems:  async (req, res) => {
+            try {
+                const todoItems = await ToDoItem.find({ createdBy: req.user.id });
+                res.json(todoItems);
+            } catch (err) {
+                console.error(err);
+                res.status(500).json({ message: "Server error" });
+            }
+        },
 
     //User to get tasks details, no need for authorisation here i think as anyone can see the open tasks
     getItemDetail: async (req, res) => {
@@ -59,6 +59,7 @@ const controllers = {
         const result = await toDoItemModel.create({
             toDoItem: data.toDoItem,
             details: data.details,
+            createdBy: res.locals.authUserID,
             assignedTo: data.assignedTo, // This should now be an array of user ids
             deadline: data.deadline,
             priority: data.priority,
@@ -179,6 +180,26 @@ const controllers = {
         res.json();
 
     },
+    
+getCreatedByUser: async (req, res) => {
+    try {
+      const items = await ToDoItem.find({ createdBy: req.params.userId });
+      res.json(items);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Server error' });
+    }
+  },
+  
+  getAssignedToUser: async (req, res) => {
+    try {
+      const items = await ToDoItem.find({ assignedTo: req.params.userId });
+      res.json(items);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Server error' });
+    }
+  },
 
 };
 
