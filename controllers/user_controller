@@ -5,6 +5,38 @@ const userValidators = require("./validators/userValidator");
 
 const userControllers = {
 
+    getUserInfo: async (req, res) => {
+        // get the authenticated user's ID from res.locals
+        const userId = res.locals.authUserID;
+    
+        // retrieve the user from the database
+        try {
+            const user = await userModel.findById(userId);
+    
+            if (!user) {
+                res.statusCode = 404;
+                return res.json({
+                    msg: "user not found"
+                });
+            }
+    
+            // respond with the user's data
+            res.json({
+                id: user._id,
+                username: user.username,
+                email: user.email,
+                // and other fields you want to include
+            });
+        } catch (err) {
+            console.log(err);
+            res.statusCode = 500;
+            return res.json({
+                msg: "failed to fetch user"
+            });
+        }
+    },
+    
+
     register: async (req, res) => {
         // get the registration data in the req
         const data = req.body;
@@ -136,68 +168,84 @@ const userControllers = {
     },
 
     // change user settings
-    updateUserDetails: async (res, req) => {
+    updateUserDetails: async (req, res) => {
         const data = req.body;
         //can change password and set whether they want notifications
         console.log(res.locals);
         // TODO: validation
 
         // try get the item from DB, if not exists, return 404 not found response
-        // let user = null; // -> will evaluate to a falsy value
+        let user = null; // -> will evaluate to a falsy value
 
-        // try {
-        //     user = await userModel.find(res.locals.username);
-        // } catch (err) {
-        //     console.log(err);
-        //     res.statusCode = 500;
-        //     return res.json();
-        // }
+        try {
+            user = await userModel.find(res.locals.username);
+        } catch (err) {
+            console.log(err);
+            res.statusCode = 500;
+            return res.json();
+        }
 
-        // if (!user) {
-        //     res.statusCode = 404;
-        //     return res.json();
-        // }
+        if (!user) {
+            res.statusCode = 404;
+            return res.json();
+        }
 
-        // console.log(user);
+        console.log(user);
 
 
-        // // const validationResult = userValidators.loginSchema.validate({
-        // //     username: user.username,
-        // //     email:user.email,
-        // //     password: data.password,
-        // //     notifications:data.notifications
-        // // });
+        const validationResult = userValidators.loginSchema.validate({
+            username: user.username,
+            email:user.email,
+            password: data.password,
+            notifications:data.notifications
+        });
 
-        // // if (validationResult.error) {
-        // //     res.statusCode = 400;
-        // //     return res.json({
-        // //         msg: validationResult.error.details[0].message
-        // //     });
-        // // }
+        if (validationResult.error) {
+            res.statusCode = 400;
+            return res.json({
+                msg: validationResult.error.details[0].message
+            });
+        }
 
-        // // use menu item model to update into database
-        // try {
-        //     await userModel.updateOne(
-        //         {
-        //             _id: user._id
-        //         },
-        //         {
-        //             username: user.username,
-        //             email: user.email,
-        //             password: data.password,
-        //             notifications: data.notifications
-        //         }
-        //     );
-        // } catch (err) {
-        //     console.log(err);
-        //     res.statusCode = 500;
-        //     return res.json();
-        // }
+        // use menu item model to update into database
+        try {
+            await userModel.updateOne(
+                {
+                    _id: user._id
+                },
+                {
+                    username: user.username,
+                    email: user.email,
+                    password: data.password,
+                    notifications: data.notifications
+                }
+            );
+        } catch (err) {
+            console.log(err);
+            res.statusCode = 500;
+            return res.json();
+        }
 
-        // console.log('updated');
+        console.log('updated');
 
-        // res.json();
-    }
+        res.json();
+    },
+
+    getUserTasks: async (req, res) => {
+        try {
+          const userId = req.user._id;
+      
+          const createdTasks = await ToDoItem.find({ createdBy: userId });
+          const assignedTasks = await ToDoItem.find({ assignedTo: { $elemMatch: { $eq: userId } } });
+      
+          const userTasks = createdTasks.concat(assignedTasks);
+      
+          res.status(200).json(userTasks);
+        } catch (error) {
+          res.status(500).json({ error: error.message });
+        }
+      }
+      
 
 
 };
