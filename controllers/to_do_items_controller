@@ -166,7 +166,7 @@ const controllers = {
         try {
             await toDoItemModel.deleteOne(
                 {
-                    _id: req.params.itemID
+                    _id: req.params.itemId
                 }
             );
         } catch (err) {
