@@ -15,6 +15,7 @@ const controllers = {
 
     //User to check tasks specific only to them
 
+
     getToDoItems: async (req, res) => {
         try {
             const todoItems = await toDoItemModel.find({ createdBy: req.user.id });
@@ -24,6 +25,7 @@ const controllers = {
             res.status(500).json({ message: "Server error" });
         }
     },
+
 
 
     //User to get tasks details, no need for authorisation here i think as anyone can see the open tasks
@@ -183,6 +185,26 @@ const controllers = {
         res.json();
 
     },
+    
+getCreatedByUser: async (req, res) => {
+    try {
+      const items = await ToDoItem.find({ createdBy: req.params.userId });
+      res.json(items);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Server error' });
+    }
+  },
+  
+  getAssignedToUser: async (req, res) => {
+    try {
+      const items = await ToDoItem.find({ assignedTo: req.params.userId });
+      res.json(items);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Server error' });
+    }
+  },
 
     getCreatedByUser: async (req, res) => {
         try {
