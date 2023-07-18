@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const toDoItemModel = require('../models/ToDoItemsModel');
+const userModel = require('../models/UserModel');
 
 
 const controllers = {
@@ -13,15 +14,19 @@ const controllers = {
     },
 
     //User to check tasks specific only to them
-        getToDoItems:  async (req, res) => {
-            try {
-                const todoItems = await ToDoItem.find({ createdBy: req.user.id });
-                res.json(todoItems);
-            } catch (err) {
-                console.error(err);
-                res.status(500).json({ message: "Server error" });
-            }
-        },
+
+
+    getToDoItems: async (req, res) => {
+        try {
+            const todoItems = await toDoItemModel.find({ createdBy: req.user.id });
+            res.json(todoItems);
+        } catch (err) {
+            console.error(err);
+            res.status(500).json({ message: "Server error" });
+        }
+    },
+
+
 
     //User to get tasks details, no need for authorisation here i think as anyone can see the open tasks
     getItemDetail: async (req, res) => {
@@ -54,7 +59,7 @@ const controllers = {
         // get data from request
         const data = req.body;
         console.log(data);
-    
+
         //insert to DB using model
         const result = await toDoItemModel.create({
             toDoItem: data.toDoItem,
@@ -66,21 +71,21 @@ const controllers = {
             repeating: data.repeating,
             status: "Open"
         },);
-    
+
         // update the assigned users' todoItems list
-        if(data.assignedTo) {
-            for(let userId of data.assignedTo) {
+        if (data.assignedTo) {
+            for (let userId of data.assignedTo) {
                 const user = await userModel.findById(userId);
                 user.todoItems.push(result._id);
                 await user.save();
             }
         }
-    
+
         res.statusCode = 201;
         res.json({
             msg: "Created successfully"
         });
-    
+
     },
 
     //Users are able to change the details, assignedto if they feel it is not assigned to them correctly add collaborators, deadline if require extension,
@@ -200,6 +205,26 @@ getCreatedByUser: async (req, res) => {
       res.status(500).json({ message: 'Server error' });
     }
   },
+
+    getCreatedByUser: async (req, res) => {
+        try {
+            const items = await ToDoItem.find({ createdBy: req.params.userId });
+            res.json(items);
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ message: 'Server error' });
+        }
+    },
+
+    getAssignedToUser: async (req, res) => {
+        try {
+            const items = await ToDoItem.find({ assignedTo: req.params.userId });
+            res.json(items);
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ message: 'Server error' });
+        }
+    },
 
 };
 
