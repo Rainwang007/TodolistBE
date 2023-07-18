@@ -22,6 +22,7 @@ mongoose.connect(`mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PA
                     username: user.username,
                     email: user.email,
                     password: hash,
+                    notifications: true,
                 });
             } catch (err) {
                 console.log(err);
