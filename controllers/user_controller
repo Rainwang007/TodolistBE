@@ -9,11 +9,11 @@ const userControllers = {
         // get the authenticated user's ID from res.locals
         const userId = res.locals.authUserID;
 
+    
         // retrieve the user from the database
         try {
             const user = await userModel.findById(userId);
-
-            if (!user) {
+                if (!user) {
                 res.statusCode = 404;
                 return res.json({
                     msg: "user not found"
@@ -178,7 +178,9 @@ const userControllers = {
         let user = null; // -> will evaluate to a falsy value
 
         try {
+
             user = await userModel.findOne({ username: res.locals.username });
+
         } catch (err) {
             console.log(err);
             res.statusCode = 500;
@@ -189,6 +191,7 @@ const userControllers = {
             res.statusCode = 404;
             return res.json();
         }
+
 
         console.log(user.username);
 
@@ -217,6 +220,7 @@ const userControllers = {
 
 
 
+
         // use menu item model to update into database
         try {
             await userModel.updateOne(
@@ -226,7 +230,9 @@ const userControllers = {
                 {
                     username: user.username,
                     email: user.email,
+
                     password: hash,
+
                     notifications: data.notifications
                 }
             );
@@ -236,13 +242,16 @@ const userControllers = {
             return res.json();
         }
 
+
         console.log('user data updated');
+
 
         res.json();
     },
 
     getUserTasks: async (req, res) => {
         try {
+
             const userId = req.user._id;
 
             const createdTasks = await ToDoItem.find({ createdBy: userId });
@@ -255,6 +264,8 @@ const userControllers = {
             res.status(500).json({ error: error.message });
         }
     }
+
+
 
 
 
