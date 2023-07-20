@@ -16,17 +16,15 @@ const controllers = {
     //User to check tasks specific only to them
 
     getToDoItems: async (req, res) => {
-        try {
-            const todoItems = await toDoItemModel.find({ createdBy: req.user.id });
-            res.json(todoItems);
-        } catch (err) {
-            console.error(err);
-            res.status(500).json({ message: "Server error" });
-        }
+        console.log(res.locals.username);
+        const username = res.locals.username;
+
+        const items = await toDoItemModel.find(
+            { assignedTo: { $in: [username] } });
+        res.json(items);
     },
 
 
-    //User to get tasks details, no need for authorisation here i think as anyone can see the open tasks
     getItemDetail: async (req, res) => {
         const itemId = req.params.itemId;
         console.log(itemId);
@@ -169,7 +167,7 @@ const controllers = {
         try {
             await toDoItemModel.deleteOne(
                 {
-                    _id: req.params.itemID
+                    _id: req.params.itemId
                 }
             );
         } catch (err) {
