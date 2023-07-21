@@ -8,7 +8,6 @@ router.get('/info', authMiddleware, userController.getUserInfo);//http://localho
 router.post('/register', userController.register);//http://localhost:3000/api/users/register
 router.post('/login', userController.login);//http://localhost:3000/api/users/login
 router.patch('/update', authMiddleware, userController.updateUserDetails);//http://localhost:3000/api/users/update
-
 router.get('/tasks', authMiddleware, userController.getUserTasks);
 
 module.exports = router;
