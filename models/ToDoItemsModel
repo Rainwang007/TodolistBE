@@ -10,7 +10,7 @@ const toDoItemSchema = new mongoose.Schema(
         deadline: { type: Date, required: true },
         status: { type: String, required: true },
         priority: { type: Number },
-        repeating: { type: String }
+        repeating: { type: Boolean }
     },
     {
         timestamps: true,
