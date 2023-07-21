@@ -10,8 +10,8 @@ router.get('/assignedTo/:userId', authMiddleware, toDoItemController.getAssigned
 router.get('/:itemId', authMiddleware, toDoItemController.getItemDetail); //http://localhost:3000/api/toDoItems/ +item ID
 router.post('/', authMiddleware, toDoItemController.createToDoItem); //http://localhost:3000/api/toDoItems/
 router.patch('/reset', toDoItemController.resetRepeating);//http://localhost:3000/api/toDoItems/reset;
-router.patch('/:itemId', authMiddleware, toDoItemController.updateToDoItem); //http://localhost:3000/api/toDoItems/ + item ID
 router.patch('/close/:itemId', authMiddleware, toDoItemController.closeToDoItem); //http://localhost:3000/api/toDoItems/close + item ID
+router.patch('/:itemId', authMiddleware, toDoItemController.updateToDoItem); //http://localhost:3000/api/toDoItems/ + item ID
 router.delete('/:itemId', authMiddleware, toDoItemController.deleteToDoItems); //http://localhost:3000/api/toDoItems/ + itemID
 
 
