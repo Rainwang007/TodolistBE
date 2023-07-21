@@ -269,7 +269,7 @@ const controllers = {
             item = await toDoItemModel.find(
                 {
                     status: "Closed",
-                    repeating: "Y",
+                    repeating: "true",
                 });
             res.json(item);
         } catch (err) {
@@ -291,7 +291,7 @@ const controllers = {
             await toDoItemModel.updateMany(
                 {
                     status: "Closed",
-                    repeating: "Y",
+                    repeating: "true",
                 },
                 {
                     toDoItem: item.toDoItem,
