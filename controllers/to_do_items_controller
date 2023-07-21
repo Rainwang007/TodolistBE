@@ -122,8 +122,8 @@ const controllers = {
                     toDoItem: item.toDoItem,
                     details: data.details,
                     assignedTo: item.assignedTo,
-                    deadline: data.deadline,
-                    priority: item.priority,
+                    deadline: item.deadline,
+                    priority: data.priority,
                     repeating: item.repeating,
                     status: data.status
                 }
@@ -184,7 +184,7 @@ const controllers = {
 
     getCreatedByUser: async (req, res) => {
         try {
-            const items = await ToDoItem.find({ createdBy: req.params.userId });
+            const items = await toDoItemModel.find({ createdBy: req.params.userId });
             res.json(items);
         } catch (error) {
             console.error(error);
@@ -200,6 +200,118 @@ const controllers = {
             console.error(error);
             res.status(500).json({ message: 'Server error' });
         }
+    },
+
+    closeToDoItem: async (req, res) => {
+
+        //can only update details, deadline and status
+
+
+        // TODO: validation
+
+        // try get the item from DB, if not exists, return 404 not found response
+        let item = null; // -> will evaluate to a falsy value
+
+        try {
+            item = await toDoItemModel.findById(req.params.itemId);
+        } catch (err) {
+            console.log(err);
+            res.statusCode = 500;
+            return res.json();
+        }
+
+        if (!item) {
+            res.statusCode = 404;
+            return res.json();
+        }
+
+        console.log(item);
+
+
+        // use menu item model to update into database
+        try {
+            await toDoItemModel.updateOne(
+                {
+                    _id: req.params.itemId
+                },
+                {
+                    toDoItem: item.toDoItem,
+                    details: item.details,
+                    assignedTo: item.assignedTo,
+                    deadline: item.deadline,
+                    priority: item.priority,
+                    repeating: item.repeating,
+                    status: "Closed"
+                }
+            );
+        } catch (err) {
+            console.log(err);
+            res.statusCode = 500;
+            return res.json();
+        }
+
+        console.log('Closed');
+
+        res.json();
+    },
+
+    resetRepeating: async (req, res) => {
+
+        //can only update details, deadline and status
+
+
+        // TODO: validation
+
+        // try get the item from DB, if not exists, return 404 not found response
+        let item = null; // -> will evaluate to a falsy value
+
+        try {
+            item = await toDoItemModel.find(
+                {
+                    status: "Closed",
+                    repeating: "Y",
+                });
+            res.json(item);
+        } catch (err) {
+            console.log(err);
+            res.statusCode = 500;
+            return res.json();
+        }
+
+        if (!item) {
+            res.statusCode = 404;
+            return res.json();
+        }
+
+        console.log(item);
+
+
+        // use menu item model to update into database
+        try {
+            await toDoItemModel.updateMany(
+                {
+                    status: "Closed",
+                    repeating: "Y",
+                },
+                {
+                    toDoItem: item.toDoItem,
+                    details: item.details,
+                    assignedTo: item.assignedTo,
+                    deadline: item.deadline,
+                    priority: item.priority,
+                    repeating: item.repeating,
+                    status: "Open"
+                }
+            );
+        } catch (err) {
+            console.log(err);
+            res.statusCode = 500;
+            return res.json();
+        }
+
+        console.log('repeating tasks have been reset');
+
+        res.json();
     },
 
 };
