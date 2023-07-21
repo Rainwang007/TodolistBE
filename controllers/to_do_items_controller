@@ -184,7 +184,7 @@ const controllers = {
 
     getCreatedByUser: async (req, res) => {
         try {
-            const items = await toDoItemModel.find({ createdBy: req.params.userId });
+            const items = await toDoItemModel.find({ createdBy: req.params.userId, });
             res.json(items);
         } catch (error) {
             console.error(error);
@@ -294,13 +294,15 @@ const controllers = {
                     repeating: "true",
                 },
                 {
-                    toDoItem: item.toDoItem,
-                    details: item.details,
-                    assignedTo: item.assignedTo,
-                    deadline: item.deadline,
-                    priority: item.priority,
-                    repeating: item.repeating,
-                    status: "Open"
+                    $set: {
+                        toDoItem: item.toDoItem,
+                        details: item.details,
+                        assignedTo: item.assignedTo,
+                        deadline: item.deadline,
+                        priority: item.priority,
+                        repeating: item.repeating,
+                        status: "Open",
+                    }
                 }
             );
         } catch (err) {
