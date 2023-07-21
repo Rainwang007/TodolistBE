@@ -184,7 +184,7 @@ const controllers = {
 
     getCreatedByUser: async (req, res) => {
         try {
-            const items = await toDoItemModel.find({ createdBy: req.params.userId, });
+            const items = await toDoItemModel.find({ createdBy: req.params.userId, status: "Open" });
             res.json(items);
         } catch (error) {
             console.error(error);
@@ -194,7 +194,9 @@ const controllers = {
 
     getAssignedToUser: async (req, res) => {
         try {
-            const items = await ToDoItem.find({ assignedTo: req.params.userId });
+            const items = await ToDoItem.find({
+                assignedTo: req.params.userId,
+            });
             res.json(items);
         } catch (error) {
             console.error(error);
