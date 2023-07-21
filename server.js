@@ -33,7 +33,7 @@ app.use('/api/users', userRouter);
 
 const sendPostRequest = async () => {
     try {
-        const response = await axios.patch('http://localhost:3000/api/toDoItems/reset');
+        const response = await axios.patch('https://todolistbe.onrender.com//api/toDoItems/reset');
         console.log('POST request successful:', response.data);
     } catch (error) {
         console.error('Error sending POST request:', error.message);
